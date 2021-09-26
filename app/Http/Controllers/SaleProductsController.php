@@ -46,8 +46,7 @@ class SaleProductsController extends Controller
                 'codeSale' => $code,
                 'user_id' => $saleProducts->user_id,
             ];
-            UserSale::create($newUserSale);
-            $userSale = UserSale::where('codeSale', $code)->get();
+            $userSale = UserSale::create($newUserSale);
             foreach ($saleProducts->products as $item) {
                 $item->user_sale_id = $userSale->id;
                 $product = SaleProducts::create($item);
