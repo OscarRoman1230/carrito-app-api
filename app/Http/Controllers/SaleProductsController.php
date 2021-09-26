@@ -37,19 +37,24 @@ class SaleProductsController extends Controller
      */
     public function store(Request $request)
     {
-        $saleProducts = $request->post();
+        $products = $request->products;
+        $products = json_encode($products);
         $resultSaleProducts = [];
-        if ($saleProducts) {
+        if ($products) {
             $code = sha1(uniqid(time() . rand(1, 500), true));
             $newUserSale = [
-                'totalValue' => $saleProducts->totalValue,
+                'totalValue' => $request->totalValue,
                 'codeSale' => $code,
-                'user_id' => $saleProducts->user_id,
+                'user_id' => $request->user_id,
             ];
             $userSale = UserSale::create($newUserSale);
-            foreach ($saleProducts->products as $item) {
-                $item->user_sale_id = $userSale->id;
-                $product = SaleProducts::create($item);
+            $array = json_decode($products, true);
+            foreach ($array as $item) {
+                $newSaleProduct = [
+                    'product_id' => $item['product_id'],
+                    'user_sale_id' => $userSale->id
+                ];
+                $product = SaleProducts::create($newSaleProduct);
                 array_push($resultSaleProducts, $product);
             }
 
@@ -58,7 +63,6 @@ class SaleProductsController extends Controller
                 'message' => 'compra guardada'
             ], 200);
         }
-
     }
 
     /**

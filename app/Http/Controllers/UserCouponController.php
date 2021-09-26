@@ -90,7 +90,7 @@ class UserCouponController extends Controller
     }
 
     public function couponValidate ($id) {
-        $userCoupon = UserCoupon::find($id);
+        $userCoupon = UserCoupon::where('code', $id)->get();
         if ($userCoupon) {
             return response()->json($userCoupon, 200);
         } else {

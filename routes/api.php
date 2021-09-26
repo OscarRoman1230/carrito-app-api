@@ -35,10 +35,10 @@ Route::group([
 });
 
 Route::resource('user-coupon', UserCouponController::class)->only(['show']);
-Route::get('user-coupon/validate/:id', [UserCouponController::class, 'couponValidate']);
+Route::get('user-coupon/validate/{id}', [UserCouponController::class, 'couponValidate']);
 
 Route::resource('sale-products', SaleProductsController::class)->only(['show', 'store']);
 
-Route::get('sale-products/my-sales/:id', [SaleProductsController::class, 'mySaleProducts']);
+Route::get('sale-products/my-sales/{id}', [SaleProductsController::class, 'mySaleProducts']);
 
 Route::resource('products', ProductsController::class)->only('index');
