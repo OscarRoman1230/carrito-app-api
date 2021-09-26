@@ -3,17 +3,23 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Products;
 
 class ProductsController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
-        //
+        $products = Products::all();
+        if ($products) {
+            return response()->json($products, 200);
+        } else {
+            return response()->json($message = 'no hay productos en inventario', 400);
+        }
     }
 
     /**

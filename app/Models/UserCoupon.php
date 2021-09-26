@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class UserCoupon extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['name', 'discount', 'code', 'user_id'];
 }

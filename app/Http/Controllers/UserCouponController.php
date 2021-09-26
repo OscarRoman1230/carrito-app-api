@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\UserCoupon;
 
 class UserCouponController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
@@ -41,11 +42,17 @@ class UserCouponController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show($id)
     {
-        //
+        $results = UserCoupon::all()->where('user_id','=', $id);
+        if ($results) {
+            return response()->json($results);
+        }
+        else {
+            return response()->json($message = 'No hay datos existente');
+        }
     }
 
     /**
@@ -80,5 +87,14 @@ class UserCouponController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function couponValidate ($id) {
+        $userCoupon = UserCoupon::find($id);
+        if ($userCoupon) {
+            return response()->json($userCoupon, 200);
+        } else {
+            return response()->json($message = 'Cupon invalido', 400);
+        }
     }
 }

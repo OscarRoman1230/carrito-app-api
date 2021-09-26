@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\SaleProducts;
+use App\Models\UserSale;
+use Illuminate\Support\Facades\DB;
 
 class SaleProductsController extends Controller
 {
@@ -30,22 +33,56 @@ class SaleProductsController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
-        //
+        $saleProducts = $request->post();
+        $resultSaleProducts = [];
+        if ($saleProducts) {
+            $code = sha1(uniqid(time() . rand(1, 500), true));
+            $newUserSale = [
+                'totalValue' => $saleProducts->totalValue,
+                'codeSale' => $code,
+                'user_id' => $saleProducts->user_id,
+            ];
+            UserSale::create($newUserSale);
+            $userSale = UserSale::where('codeSale', $code)->get();
+            foreach ($saleProducts->products as $item) {
+                $item->user_sale_id = $userSale->id;
+                $product = SaleProducts::create($item);
+                array_push($resultSaleProducts, $product);
+            }
+
+            return response()->json([
+                'saleProducts' => $resultSaleProducts,
+                'message' => 'compra guardada'
+            ], 200);
+        }
+
     }
 
     /**
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show($id)
     {
-        //
+        $results = DB::table('user_sales')
+            ->join('users', 'users.id', '=', 'user_sales.user_id')
+            ->join('sale_products', 'sale_products.user_sale_id', '=', 'user_sales.id')
+            ->join('products', 'products.id', '=', 'sale_products.products_id')
+            ->select('user_sales.*', 'users.name as userName', 'products.name as productName', 'products.value as productValue')
+            ->where('user_sales.id', '=', $id)->get();
+
+        if ($results) {
+            return response()->json($results, 200);
+        }
+        else {
+            return response()->json($message = 'No hay datos existente', 400);
+        }
     }
 
     /**
@@ -80,5 +117,17 @@ class SaleProductsController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function mySaleProducts ($id) {
+        $saleProducts = UserSale::all()->where('user_id', '=', $id);
+        if ($saleProducts) {
+            return response()->json([
+                'saleProducts' => $saleProducts,
+                'message' => 'Mis compras'
+            ], 200);
+        } else {
+            return response()->json($message = 'no has realizado compras hasta la fecha', 400);
+        }
     }
 }

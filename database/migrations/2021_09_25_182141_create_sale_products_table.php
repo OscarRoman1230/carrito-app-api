@@ -16,9 +16,9 @@ class CreateSaleProductsTable extends Migration
         Schema::create('sale_products', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('product_id');
-            $table->unsignedBigInteger('user_sales_id');
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('null');
-            $table->foreign('user_sales_id')->references('id')->on('user_sales');
+            $table->unsignedBigInteger('user_sale_id');
+            $table->foreign('product_id')->references('id')->on('products');
+            $table->foreign('user_sale_id')->references('id')->on('user_sales')->cascadeOnDelete();
             $table->timestamps();
         });
     }

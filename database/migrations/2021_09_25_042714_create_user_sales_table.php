@@ -15,6 +15,10 @@ class CreateUserSalesTable extends Migration
     {
         Schema::create('user_sales', function (Blueprint $table) {
             $table->id();
+            $table->string('totalValue');
+            $table->string('codeSale');
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
         });
     }

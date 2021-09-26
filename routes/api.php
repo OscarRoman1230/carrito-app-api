@@ -3,6 +3,11 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserCouponController;
+use App\Http\Controllers\SaleProductsController;
+use App\Http\Controllers\ProductsController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -17,3 +22,23 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'auth'
+], function ($router) {
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('refresh', [AuthController::class, 'refresh']);
+    Route::post('me', [AuthController::class, 'me']);
+    Route::post('register', [AuthController::class, 'register']);
+});
+
+Route::resource('user-coupon', UserCouponController::class)->only(['show']);
+Route::get('user-coupon/validate/:id', [UserCouponController::class, 'couponValidate']);
+
+Route::resource('sale-products', SaleProductsController::class)->only(['show', 'store']);
+
+Route::get('sale-products/my-sales/:id', [SaleProductsController::class, 'mySaleProducts']);
+
+Route::resource('products', ProductsController::class)->only('index');
